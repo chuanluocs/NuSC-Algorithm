@@ -1114,11 +1114,12 @@ int WSCP::select_set(int is_tabu)
 int WSCP::select_set_Novelty()
 {
     int selected_uncover_var = uncover_stack[random() % uncover_stack_fill_pointer];
-    int sr = INT_MIN, ct = 1, best_set = 0;
+    int sr = INT_MIN, ct = 1, best_set = -1;
     int ps = INT_MIN;
     for (int i = 0; i < var_set_num[selected_uncover_var]; ++i)
     {
         int cur_set = var_set[selected_uncover_var][i];
+        if(best_set == -1) best_set = cur_set;
         if (cc[cur_set] == 0 || step - time_stamp[cur_set] < tabu_length)
             continue;
         if (sr == INT_MIN || (this->*compareVersion)(sr, ct, score[cur_set], cost[cur_set], ps, pscore[cur_set], weight1, weight2) < 0)
@@ -1137,7 +1138,7 @@ int WSCP::select_set_Novelty()
         }
     }
 
-    int sec_best_set = 0;
+    int sec_best_set = -1;
     sr = INT_MIN;
     ct = 1;
     ps = INT_MIN;
@@ -1173,7 +1174,7 @@ int WSCP::select_set_Novelty()
     }
     */
     
-    if ((random() % 100)/(double)101 < novelty_p)
+    if (sec_best_set != -1 && (random() % 100)/(double)101 < novelty_p)
         best_set = sec_best_set;
 
     return best_set;
